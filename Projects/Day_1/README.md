@@ -25,7 +25,7 @@ This file contains the project metadata and dependencies required to run the Nod
 
 #### Installation and Usage
 1. **Prerequisites**: Node.js and npm installed on your system.
-2. Create a new folder called `HelloWorldAPI` navigate to the directory.
+2. Create a new folder called `HelloWorldAPI` and navigate to the directory.
 3. Install the dependencies:
    ```bash
    npm install
@@ -38,7 +38,10 @@ This file contains the project metadata and dependencies required to run the Nod
    ```bash
    npm run dev
    ```
-6. Access the API by visiting `http://localhost:3000/` in your browser, or to whatever port you specified in your project
+6. Access the API by visiting `http://localhost:3000/` in your browser, or to whatever port you specified in your project. You should also have this message showing in your terminal:
+   ```bash
+   Server is running on port 3000
+   ```
 
 ### Example Response
 ```json
