@@ -1,5 +1,5 @@
 {
-  "name": "new_server",
+  "name": "hello_world-nodeJS",
   "version": "1.0.0",
   "description": "A simple server created using Express in Node.js. I also built this using the ES6 module.",
   "main": "app.js",
