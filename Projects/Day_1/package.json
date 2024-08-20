@@ -1,0 +1,17 @@
+{
+  "name": "new_server",
+  "version": "1.0.0",
+  "description": "A simple server created using Express in Node.js. I also built this using the ES6 module.",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "author": "Hephzibah",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "nodemon": "^3.1.4"
+  }
+}
