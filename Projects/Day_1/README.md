@@ -19,6 +19,8 @@ Hi everyone. This marks day 1 out of 100 and I have created a simple API which r
 |  TypeScript
 |  |- src
 |  |  |- index.ts
+|  |- package.json
+|  |- tsconfig.json
 ```
 
 ## Node.js
@@ -32,6 +34,7 @@ This file contains the project metadata and dependencies required to run the Nod
 #### Installation and Usage
 1. **Prerequisites**: Node.js and npm installed on your system.
 2. Navigate to the `NodeJS` directory.
+2. Create a new folder called `HelloWorldAPI` and navigate to the directory.
 3. Install the dependencies:
    ```bash
    npm install
