@@ -2,7 +2,7 @@
   "name": "hello_world-typescript",
   "version": "1.0.0",
   "description": "A simple API server built using typescript",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "scripts": {
     "start": "node src/index.ts",
     "dev": "nodemon src/index.ts"
