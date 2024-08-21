@@ -1,2 +1,20 @@
-/Projects/Day_1/NodeJS/node_modules
-/Projects/Day_1/TypeScript/node_modules
+# Node.js modules
+node_modules/
+
+# TypeScript compiled output
+dist/
+build/
+
+# Logs
+logs/
+*.log
+
+# .env files
+*.env
+
+# System files
+.DS_Store
+
+# IDE/editor-specific files
+.vscode/
+.idea/
