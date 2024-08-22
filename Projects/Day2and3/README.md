@@ -25,6 +25,21 @@ Hi everyone. This is an API I worked on as my project for day 2 and day 3. It pe
 |  |- Routes
 |  |  |- userRoute.js
 |  |- app.js
+|  |- package.json
+|  TypeScript
+|  |- src
+|  |  |- config
+|  |  |  |- db.ts
+|  |  |  |- env.ts
+|  |  |- controllers
+|  |  |  |- user.controller.ts
+|  |  |- models
+|  |  |  |- users.ts
+|  |  |- routes
+|  |  |  |- user.route.ts
+|  |  |- index.ts
+|  |- package.json
+|  |- tsconfig.json
 ```
 
 ## NodeJS
