@@ -9,9 +9,11 @@ const PORT = config.PORT;
 // Connect to MongoDB
 connect();
 
+app.use(express.json());
+
 // Default route
 app.get('/', (req: Request, res: Response) => {
-  res.status(200).json({message: 'Hello World!'});
+  res.status(200).json({message: 'Welcome to my TypeScript server!'});
 });
 
 // user Routes

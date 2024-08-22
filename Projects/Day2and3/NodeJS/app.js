@@ -6,9 +6,14 @@ import userRoute from "./routes/userRoute.js";
 const app = express();
 const PORT = config.PORT;
 
+// Connect MongoDB
+connect();
+
+app.use(express.json());
+
 // Default route
 app.get('/', (req, res) => {
-  res.status(200).json({message: 'Hello World!'});
+  res.status(200).json({message: 'Welcome to my NodeJS server!'});
 });
 
 // user routes
