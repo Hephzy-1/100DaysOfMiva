@@ -10,6 +10,10 @@ Hi everyone. This is an API I worked on as my project for day 2 and day 3. It pe
   - [Update](#update)
   - [Delete](#delete)
 - [TypeScript](#typescript)
+  - [Create](#create-1)
+  - [Read](#read-1)
+  - [Update](#update-1)
+  = [Delete](#delete-1)
 
 ## Project Overview
 ```
