@@ -7,3 +7,7 @@ export const userSignUp = Joi.object({
   googleId: Joi.string()
 });
 
+export const userLogin = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().min(8)
+})
