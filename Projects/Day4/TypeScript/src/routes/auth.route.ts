@@ -6,7 +6,7 @@ const route = Router();
 
 route.post('/signup', signUp);
 route.post('/login', logIn);
-route.get('/oauth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-route.get('/oauth/google/callback', oAuth);
+route.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+route.get('/google/callback', oAuth);
 
 export default route;

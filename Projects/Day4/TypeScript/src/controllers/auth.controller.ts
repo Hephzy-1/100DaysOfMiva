@@ -1,9 +1,10 @@
 import express, { Request, Response, NextFunction } from "express";
 import User from "../models/userModel";
-import { userSignUp, userLogin } from "../utils/validators/userValidator";
+import { userSignUp, userLogin, resetSchema } from "../utils/validators/userValidator";
 import { hashPassword, comparePassword } from "../utils/hash";
 import { generateToken, verifyToken } from "../utils/jwt";
 import passport from 'passport';
+import crypto from 'crypto';
 import '../config/passport';  // Initialize passport strategies
 
 export async function signUp(req:Request, res: Response) {
@@ -25,6 +26,9 @@ export async function signUp(req:Request, res: Response) {
     }
 
     const hashed = await hashPassword(password);
+    
+    const payload = { userId: email};
+    const token = await generateToken(payload);
 
     const newUser = new User({
       name,
@@ -33,10 +37,6 @@ export async function signUp(req:Request, res: Response) {
     });
 
     await newUser.save();
-
-    const payload = { userID: newUser.id };
-    const token = await generateToken(payload);
-    console.log(token)
 
     res.status(201).json({ message: 'New user has been created', token});
   } catch (err) {
@@ -60,6 +60,7 @@ export async function logIn(req: Request, res: Response) {
 
     // Check if user exists
     const user = await User.findOne({ email });
+    console.log(user)
     if (!user || !user.password) {
       throw new Error("User doesn't exist or password is missing");
     }
@@ -71,8 +72,8 @@ export async function logIn(req: Request, res: Response) {
     }
 
     // Generate JWT token
-    const payload = { userId: user.id };
-    const token = generateToken(payload);
+    const payload = { userId: user._id };
+    const token = await generateToken(payload);
 
     res.status(200).json({ message: 'Success', token });
   } catch (error) {
@@ -85,15 +86,53 @@ export async function logIn(req: Request, res: Response) {
 }
 
 export function oAuth(req: Request, res: Response, next: NextFunction) {
-  passport.authenticate('google', { scope: ['profile', 'email'], session: false }, (err, user, info) => {
-    if (err || !user) {
+  passport.authenticate('google', { scope: ['profile', 'email'], session: false }, async (err, user, info) => {
+    if (err) {
+      console.error('Error during authentication:', err);
+      return res.status(400).json({ message: 'Authentication failed', error: err });
+    }
+    if (!user) {
+      console.log('No user found:', info);
       return res.status(400).json({ message: 'Authentication failed', error: info });
     }
 
     // On successful authentication, issue JWT
-    const payload = { userId: user.id };
-    const token = generateToken(payload);
+    const payload = { userId: user._id };
+    const token = await generateToken(payload);
 
     res.json({ token });
   })(req, res, next);
 };
+
+export const resetLink = async (req:Request, res:Response) => {
+  try {
+    const { error, value } = resetSchema.validate(req.body);
+
+    if (error) {
+      throw Error('Invalid user details');
+    }
+
+    const { email } = value;
+
+    const exist = User.find({ email });
+    console.log(exist)
+
+    if (!exist) {
+      throw Error(`This account doesn't exist. Please create an account`);
+    }
+
+    const opt = crypto.randomUUID().split('-')[0]
+    const payload = { userId: exist }
+    const token = await generateToken(payload)
+  } catch (err) {
+    
+  }
+}
+
+export async function resetPassword (req: Request, res: Response) {
+  try {
+    
+  } catch (err) {
+    
+  }
+}

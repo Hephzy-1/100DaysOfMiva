@@ -10,4 +10,8 @@ export const userSignUp = Joi.object({
 export const userLogin = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(8)
+});
+
+export const resetSchema = Joi.object({
+  email: Joi.string().email().required()
 })

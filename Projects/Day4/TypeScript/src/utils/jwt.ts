@@ -9,7 +9,7 @@ export const generateToken = async (payload: object) => {
   }
 
   // Sign the jwt and return it
- jwt.sign(payload, config.JWT_SECRET, { expiresIn: '1h'})
+  return jwt.sign(payload, config.JWT_SECRET, { expiresIn: '1h'})
 }
 
 export const verifyToken = async (token:string) => {

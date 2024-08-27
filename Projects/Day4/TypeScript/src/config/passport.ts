@@ -25,24 +25,31 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, passwor
 }));
 
 passport.use(new GoogleStrategy({
-  clientID: config.CLIENT_ID!,
-  clientSecret: config.CLIENT_SECRET!,
-  callbackURL: '/auth/google/callback',
-}, async (accessToken, refreshToken, profile, done) => {
-  const { id, emails } = profile;
-  const email = emails?.[0].value;
-
+  clientID: process.env.GOOGLE_CLIENT_ID!,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+  callbackURL: 'http://localhost:4080/auth/google/callback',
+},
+async (token, tokenSecret, profile, done) => {
   try {
-    let user = await User.findOne({ googleId: id });
+    console.log(profile); // Log the profile to check what data is available
+    
+    let user = await User.findOne({ googleId: profile.id });
 
-    if (!user && email) {
-      const newUser = new User({ googleId: id, email });
-      await newUser.save();
+    if (user) {
+      return done(null, user);
+    } else {
+      user = new User({
+        googleId: profile.id,
+        email: profile.emails?.[0].value,
+        name: profile.displayName || "Unnamed User",  // Fallback in case displayName is missing
+        // Add other fields as needed
+      });
+
+      await user.save();
+      return done(null, user);
     }
-
-    return done(null, user?.id);
-  } catch (err) {
-    return done(err);
+  } catch (error) {
+    return done(error, false);
   }
 }));
 

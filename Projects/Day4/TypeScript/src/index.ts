@@ -4,6 +4,7 @@ import config from './config/env';
 import passportConfig from './config/passport';
 import authRoute from './routes/auth.route';
 import passport from "passport";
+import OTP from "./models/userOTP";
 
 const app = express();
 const PORT = config.PORT;
