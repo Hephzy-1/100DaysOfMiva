@@ -12,6 +12,15 @@ export const userLogin = Joi.object({
   password: Joi.string().min(8)
 });
 
+export const resetLinkSchema = Joi.object({
+  email: Joi.string().email().required()
+});
+
 export const resetSchema = Joi.object({
+  password: Joi.string().min(8).required(),
+  confirmPassword: Joi.string().min(8).required() 
+});
+
+export const deleteSchema = Joi.object({
   email: Joi.string().email().required()
 })

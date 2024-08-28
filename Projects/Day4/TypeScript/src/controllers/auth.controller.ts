@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import User from "../models/userModel";
-import { userSignUp, userLogin, resetSchema } from "../utils/validators/userValidator";
+import { userSignUp, userLogin, resetSchema, resetLinkSchema, deleteSchema } from "../utils/validators/userValidator";
 import { hashPassword, comparePassword } from "../utils/hash";
 import { generateToken, verifyToken } from "../utils/jwt";
 import passport from 'passport';
@@ -106,7 +106,7 @@ export function oAuth(req: Request, res: Response, next: NextFunction) {
 
 export const resetLink = async (req:Request, res:Response) => {
   try {
-    const { error, value } = resetSchema.validate(req.body);
+    const { error, value } = resetLinkSchema.validate(req.body);
 
     if (error) {
       throw Error('Invalid user details');
@@ -121,18 +121,100 @@ export const resetLink = async (req:Request, res:Response) => {
       throw Error(`This account doesn't exist. Please create an account`);
     }
 
-    const opt = crypto.randomUUID().split('-')[0]
-    const payload = { userId: exist }
-    const token = await generateToken(payload)
+    const payload = { userId: email }
+    const token = await generateToken(payload);
+
+    res.status(200).json({ message: 'Reset link sent', token})
   } catch (err) {
-    
+    if (err instanceof Error) {
+      res.status(400).json({ message: 'Invalid', error: err.message})
+    } else {
+      res.status(500).json({ message: 'Server Error', err})
+    }
   }
 }
 
 export async function resetPassword (req: Request, res: Response) {
   try {
-    
+
+    // Check user input
+    const { error, value } = resetSchema.validate(req.body)
+
+    // In case user input is invalid
+    if (error) {
+      throw Error('Invalid user input')
+    }
+
+    const { password, confirmPassword } = value;
+
+    // Extract token from request link
+    const token = req.params.token;
+
+    // make sure token is in link
+    if (!token) {
+      Error('No token found')
+    }
+
+    // verify the token
+    const decoded = verifyToken(token)
+
+    if (!decoded) {
+      Error('Invalid token or token has expired')
+    }
+
+    // Check that details belong to existing user
+    const user = User.findOne(decoded)
+
+    if (!user) {
+      throw Error(`This user doesn't exixt in our database. Please create an account.`)
+    }
+
+    // Check if password and confirm password is the same
+    if (password !== confirmPassword) {
+      throw Error('Passwords must be the same')
+    }
+
+    // Update user password
+    user.password = password;
+    await user.save();
+
+    res.status(200).json({ message: 'Password has been updated' })
+
   } catch (err) {
-    
+    if (err instanceof Error) {
+      res.status(400).json({ message: 'Invalid', error: err.message })
+    } else {
+      res.status(500).json({ message: 'Server Error', err })
+    }
+  }
+}
+
+export async function deleteUser (req:Request, res:Response) {
+  try {
+    // Validate user input
+    const { error, value } = deleteSchema.validate(req.body);
+
+    if (error) {
+      throw Error('Invalid user input')
+    }
+
+    const { email } = value;
+
+    // Check if user exist
+    const check = User.findOne({ email });
+
+    if (!check) {
+      throw Error(`This user isn't in our database`)
+    }
+
+    const del = User.deleteOne({ email })
+
+    res.status(200).json({ message: 'Successful delete', del});
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(400).json({ message: 'Invalid', error: err.message});
+    } else {
+      res.status(500).json({ message: 'Server Error', err});
+    }
   }
 }
