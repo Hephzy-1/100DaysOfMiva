@@ -20,5 +20,5 @@ export const verifyToken = async (token:string) => {
   }
 
   // verify token
- jwt.verify(token, config.JWT_SECRET)
+ return jwt.verify(token, config.JWT_SECRET)
 }

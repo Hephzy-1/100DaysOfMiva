@@ -4,8 +4,10 @@ import { userSignUp, userLogin, resetSchema, resetLinkSchema, deleteSchema } fro
 import { hashPassword, comparePassword } from "../utils/hash";
 import { generateToken, verifyToken } from "../utils/jwt";
 import passport from 'passport';
-import crypto from 'crypto';
+import { JwtPayload } from 'jsonwebtoken';
 import '../config/passport';  // Initialize passport strategies
+import { sendResetLinkMail, welcome } from "../utils/email";
+import { profile } from "console";
 
 export async function signUp(req:Request, res: Response) {
   try {
@@ -38,7 +40,9 @@ export async function signUp(req:Request, res: Response) {
 
     await newUser.save();
 
-    res.status(201).json({ message: 'New user has been created', token});
+    const sendMail = await welcome(email, name);
+
+    res.status(201).json({ message: 'New user has been created', sendMail, token});
   } catch (err) {
     if (err instanceof Error) {
       res.status(400).json({ message: 'Invalid', err: err.message});
@@ -96,11 +100,34 @@ export function oAuth(req: Request, res: Response, next: NextFunction) {
       return res.status(400).json({ message: 'Authentication failed', error: info });
     }
 
-    // On successful authentication, issue JWT
-    const payload = { userId: user._id };
-    const token = await generateToken(payload);
+   try {
+      // Extract email and name from the authenticated user (assuming it's provided by Google)
+      const email = user.email;
+      const name = user.name;
 
-    res.json({ token });
+      // Ensure email and name exist
+      if (!email || !name) {
+        return res.status(400).json({ message: 'Missing email or name from user data' });
+      }
+
+      // Issue JWT on successful authentication
+      const payload = { userId: user._id };
+      const token = await generateToken(payload);
+
+      // Send welcome email
+      const sendMail = await welcome(email, name);
+
+      // Respond with the JWT and email result
+      return res.json({ message: 'Authentication successful', token, sendMail });
+
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Error with email');
+        res.status(400).json({ message: 'Authentication successful, but email sending failed', error: err.message})
+      } else {
+        res.status(500).json({ message: 'Internal Server Error', error: err })
+      }
+    }
   })(req, res, next);
 };
 
@@ -124,6 +151,8 @@ export const resetLink = async (req:Request, res:Response) => {
     const payload = { userId: email }
     const token = await generateToken(payload);
 
+    const sendResetLink = sendResetLinkMail(email, exist.name, token)
+
     res.status(200).json({ message: 'Reset link sent', token})
   } catch (err) {
     if (err instanceof Error) {
@@ -134,60 +163,64 @@ export const resetLink = async (req:Request, res:Response) => {
   }
 }
 
-export async function resetPassword (req: Request, res: Response) {
+export async function resetPassword(req: Request, res: Response) {
   try {
+    // Validate user input
+    const { error, value } = resetSchema.validate(req.body);
 
-    // Check user input
-    const { error, value } = resetSchema.validate(req.body)
-
-    // In case user input is invalid
     if (error) {
-      throw Error('Invalid user input')
+      throw new Error('Invalid user input');
     }
 
     const { password, confirmPassword } = value;
-
-    // Extract token from request link
     const token = req.params.token;
 
-    // make sure token is in link
     if (!token) {
-      Error('No token found')
+      throw new Error('No token found');
     }
 
-    // verify the token
-    const decoded = verifyToken(token)
+    // Verify the token and await its result
+    const decoded = await verifyToken(token);
+    console.log(decoded)
 
     if (!decoded) {
-      Error('Invalid token or token has expired')
+      throw new Error('Invalid token or token has expired');
     }
+    
+    // Extract userId from decoded object
+    const userId = (decoded as JwtPayload).userId;
+    console.log(userId);
 
-    // Check that details belong to existing user
-    const user = User.findOne(decoded)
+    // Check that details belong to an existing user
+    const user = await User.findOne({email: userId});
 
     if (!user) {
-      throw Error(`This user doesn't exixt in our database. Please create an account.`)
+      throw new Error(`This user doesn't exist in our database. Please create an account.`);
     }
 
-    // Check if password and confirm password is the same
+    // Check if password and confirm password are the same
     if (password !== confirmPassword) {
-      throw Error('Passwords must be the same')
+      throw new Error('Passwords must be the same');
     }
+
+    // Hash the new password (assuming bcrypt is used)
+    const hashedPassword = await hashPassword(password);
 
     // Update user password
-    user.password = password;
+    user.password = hashedPassword;
     await user.save();
 
-    res.status(200).json({ message: 'Password has been updated' })
+    res.status(200).json({ message: 'Password has been updated' });
 
   } catch (err) {
     if (err instanceof Error) {
-      res.status(400).json({ message: 'Invalid', error: err.message })
+      res.status(400).json({ message: 'Invalid', error: err.message });
     } else {
-      res.status(500).json({ message: 'Server Error', err })
+      res.status(500).json({ message: 'Server Error', error: err });
     }
   }
 }
+
 
 export async function deleteUser (req:Request, res:Response) {
   try {
@@ -201,15 +234,15 @@ export async function deleteUser (req:Request, res:Response) {
     const { email } = value;
 
     // Check if user exist
-    const check = User.findOne({ email });
+    const check = await User.findOne({ email });
 
     if (!check) {
       throw Error(`This user isn't in our database`)
     }
 
-    const del = User.deleteOne({ email })
+    const del = await User.deleteOne({ email })
 
-    res.status(200).json({ message: 'Successful delete', del});
+    res.status(204).json({ message: 'Successful delete', del});
   } catch (err) {
     if (err instanceof Error) {
       res.status(400).json({ message: 'Invalid', error: err.message});

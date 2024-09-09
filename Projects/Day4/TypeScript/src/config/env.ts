@@ -7,7 +7,9 @@ const config = Object.freeze({
   JWT_SECRET: process.env.JWT_SECRET,
   CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-  OAUTH_URL: process.env.OAUTH_URL
+  OAUTH_URL: process.env.OAUTH_URL,
+  EMAIL: process.env.EMAIL,
+  EMAIL_PASS: process.env.EMAIL_PASS
 });
 
 export default config;
