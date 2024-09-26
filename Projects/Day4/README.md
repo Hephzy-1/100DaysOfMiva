@@ -1,14 +1,15 @@
-# Airbnb FullStack Project
-Hi, it's me again and for the past few days I have been creating a full stack Airbnb website. I used React for the Frontend and TypeScript for the Backend. Two languages I am just learning. Don't worry, I'll be taking you throught the steps from scratch.
+# Banking System Fullstack Project
+Hi, it's me again and for the past few days I have been creating a full stack Banking website. I used React for the Frontend and TypeScript for the Backend. Two languages I am just learning. Don't worry, I'll be taking you throught the steps from scratch.
 
 ## Table Of Content
 - [Project Overview](#project-overview)
 - [Frontend]
 - [Backend](#backend-development)
+   - [Installation](#installation)
 
 ## Project Overview
 ```
-/Airbnb
+/Banking_System
 | frontend
 | | node_modules
 | | public 
@@ -47,7 +48,7 @@ Hi, it's me again and for the past few days I have been creating a full stack Ai
 ## Backend Development
 This was a lot f fun but I still had some bugs while creating it so... Let's get right into it. How to create your own AirBnb Web Server.
 
-### Installation and Usage
+### Installation 
 I used typescript for this and added a few other packages to this project. Here is the installation steps from scratch.
 
 #### Steps
@@ -72,7 +73,7 @@ I used typescript for this and added a few other packages to this project. Here 
    ```bash
    npm run dev
    ```
-7. Access the API by visiting `http://localhost:3000/` in your browser, or to whatever port you specified in your project. You should also have this message showing in your terminal:
+7. Access the API by visiting `http://localhost:4080/` in your browser, or to whatever port you specified in your project. You should also have this message showing in your terminal:
    ```bash
-   Server is running on port 3000
+   Server is running on port 4080
    ```
