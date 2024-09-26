@@ -34,7 +34,9 @@ export default function Form() {
           <button className="font-medium text-base text-violet-500 ml-4">Forget Password</button>
         </div>
         <div className="mt-8 flex flex-col gap-y-4">
-          <button className="active:scale-[.98] active:duration-75 hover:scale-[1.01] ease-in-out transition-all py-3 rounded-xl bg-violet-500 text-white text-lg font-bold">Sign In</button>
+          <button className="active:scale-[.98] active:duration-75 hover:scale-[1.01] ease-in-out transition-all py-3 rounded-xl bg-violet-500 text-white text-lg font-bold">
+            <a href="./Register.tsx">Sign In</a>
+          </button>
           <button className="flex rounded-3xl py-3 border-2 border-gray-100 items-center justify-center gap-2 active:scale-[.98] active:duration-75 hover:scale-[1.01] ease-in-out transition-all">
             Sign In with Google
           </button>
